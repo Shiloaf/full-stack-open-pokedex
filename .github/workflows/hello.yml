@@ -1,10 +1,13 @@
 name: "Hello World Workflow"
 run-name: "Hello World from ${{ github.actor }}"
-on: [push]
+on: 
+  push:
+  workflow_dispatch:
 jobs:
     hello:
         runs-on: ubuntu-latest
         steps:
+            - run: echo ${{ runner.container }}
             - run: echo "Hello World"
             - name: "Now it is"
               run: date
