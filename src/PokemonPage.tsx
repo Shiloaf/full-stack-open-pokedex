@@ -1,19 +1,26 @@
-import React from 'react';
-import { Link, useParams } from 'react-router-dom';
-import LoadingSpinner from './LoadingSpinner';
-import { useApi } from './useApi';
-import PokemonAbility from './PokemonAbility';
-import ErrorMessage from './ErrorMessage';
+import React from "react";
+import { Link, useParams } from "react-router-dom";
+import LoadingSpinner from "./LoadingSpinner";
+import { useApi } from "./useApi";
+import PokemonAbility from "./PokemonAbility";
+import ErrorMessage from "./ErrorMessage";
+import { PokemonCreature, PokemonData } from "./types";
 
-const formatName = (nameWithDash) => nameWithDash.replace('-', ' ');
+const formatName = (nameWithDash: string) => nameWithDash.replace("-", " ");
 
-const PokemonPage = ({ previous, next }) => {
+const PokemonPage = ({
+  previous,
+  next,
+}: {
+  previous: PokemonCreature | null;
+  next: PokemonCreature | null;
+}) => {
   const { name } = useParams();
   const {
     data: pokemon,
     error,
     isLoading,
-  } = useApi(`https://pokeapi.co/api/v2/pokemon/${name}`);
+  } = useApi<PokemonData>(`https://pokeapi.co/api/v2/pokemon/${name}`);
 
   if (isLoading) {
     return <LoadingSpinner />;
@@ -22,7 +29,14 @@ const PokemonPage = ({ previous, next }) => {
     return <ErrorMessage error={error} />;
   }
 
-  const { type } = pokemon.types.find((type) => type.slot === 1);
+  if (!pokemon) {
+    return <ErrorMessage error="Pokemon name not recognized" />;
+  }
+
+  const type = pokemon.types.find((type) => type.slot === 1)?.type;
+  if (!type) {
+    return <ErrorMessage error="Pokemon type not recognized" />;
+  }
   const stats = pokemon.stats
     .map((stat) => ({
       name: formatName(stat.stat.name),
@@ -31,10 +45,10 @@ const PokemonPage = ({ previous, next }) => {
     .reverse();
   const normalAbility = pokemon.abilities.find((ability) => !ability.is_hidden);
   const hiddenAbility = pokemon.abilities.find(
-    (ability) => ability.is_hidden === true,
+    (ability) => ability.is_hidden === true
   );
 
-  console.log('hiddenAbility=', hiddenAbility);
+  console.log("hiddenAbility=", hiddenAbility);
   return (
     <>
       <div className="links">
