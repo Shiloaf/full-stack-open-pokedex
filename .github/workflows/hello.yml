@@ -7,7 +7,6 @@ jobs:
     hello:
         runs-on: ubuntu-latest
         steps:
-            - run: echo ${{ runner.container }}
             - run: echo "Hello World"
             - name: "Now it is"
               run: date
