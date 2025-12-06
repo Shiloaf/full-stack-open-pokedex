@@ -22,7 +22,7 @@
   "bugs": {
     "url": "https://github.com/smartlyio/fullstackopen-cicd/issues"
   },
-  "homepage": "https://github.com/smartlyio/fullstackopen-cicd#readme",
+  "homepage": "https://Shiloaf.github.io/full-stack-open-pokedex",
   "devDependencies": {
     "@babel/core": "^7.23.7",
     "@babel/plugin-transform-runtime": "^7.23.7",

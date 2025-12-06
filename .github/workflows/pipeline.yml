@@ -7,7 +7,7 @@ on:
     workflow_dispatch:
 
 jobs:
-    deployment_pipeline:
+    build_test:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
@@ -20,5 +20,21 @@ jobs:
               run: npm run eslint
             - name: "Build project"
               run: npm run build
+            - uses: actions/upload-pages-artifact@v3
+              with:
+                path: './dist'
             - name: "Run tests"
               run: npm run test
+    
+    deploy:
+        environment:
+            name: github-pages
+            url: ${{ steps.deployment.outputs.page_url }}
+        needs: build_test
+        runs-on: ubuntu-latest
+        steps:
+            - name: Deploy to GitHub Pages
+              id: deployment
+              uses: actions/deploy-pages@v4
+
+          
