@@ -6,13 +6,8 @@ on:
             - main
     workflow_dispatch:
 
-permissions:
-    contents: read
-    pages: write
-    id-token: write
-
 jobs:
-    build_test:
+    deployment_pipeline:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
@@ -25,23 +20,5 @@ jobs:
               run: npm run eslint
             - name: "Build project"
               run: npm run build
-            - uses: actions/upload-pages-artifact@v3
-              if: always() && github.token != ''
-              with:
-                path: './dist'
             - name: "Run tests"
               run: npm run test
-    
-    deploy:
-        environment:
-            name: github-pages
-            url: ${{ steps.deployment.outputs.page_url }}
-        needs: build_test
-        runs-on: ubuntu-latest
-        steps:
-            - name: Deploy to GitHub Pages
-              if: always() && github.token != ''
-              id: deployment
-              uses: actions/deploy-pages@v4
-
-          
