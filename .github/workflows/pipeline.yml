@@ -7,7 +7,7 @@ on:
     workflow_dispatch:
 
 jobs:
-    deployment_pipeline:
+    build_test:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
@@ -20,12 +20,32 @@ jobs:
               run: npm run eslint
             - name: "Build project"
               run: npm run build
+            - name: "Upload pages artifact"
+              uses: actions/upload-pages-artifact@v3
+              if: always() && github.token != ''
+              with:
+                path: './dist'
             - name: "Run tests"
               run: npm run test
             - name: "Install Playwright Browsers"
               run: npx playwright install --with-deps
             - name: Run Playwright tests
               run: npx playwright test
-            - name: "Deploy"
+
+    deploy:
+        runs-on: ubuntu-latest
+        needs: build_test
+        environment:
+            name: github-pages
+            url: ${{ steps.deployment.outputs.page_url }}
+        permissions:
+            pages: write
+            id-token: write
+        steps:
+            - name: "Deploy to Render"
               if: always() && github.token != ''
               run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
+            - name: Deploy to GitHub Pages
+              if: always() && github.token != ''
+              id: deployment
+              uses: actions/deploy-pages@v4
