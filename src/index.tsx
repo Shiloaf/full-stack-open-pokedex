@@ -4,8 +4,11 @@ import { BrowserRouter as Router } from "react-router-dom";
 import App from "./App";
 import "./styles.css";
 
+const basename =
+  process.env.NODE_ENV === "production" ? "/full-stack-open-pokedex" : "";
+
 createRoot(document.getElementById("app")!).render(
-  <Router basename="/full-stack-open-pokedex">
+  <Router basename={basename}>
     <App />
   </Router>
 );
