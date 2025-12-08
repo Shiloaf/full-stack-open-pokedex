@@ -6,7 +6,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'dist', 'full-stack-open-pokedex'),
     filename: 'bundle.js',
-    publicPath: '/'
+    publicPath: '/full-stack-open-pokedex'
   },
   module: {
     rules: [
@@ -42,7 +42,7 @@ module.exports = {
   devServer: {
     historyApiFallback: true,
     static: {
-      directory: path.join(__dirname, 'public'),
+      directory: path.join(__dirname, 'dist', 'full-stack-open-pokedex'),
     },
     compress: true,
   },
