@@ -5,7 +5,7 @@ import App from "./App";
 import "./styles.css";
 
 createRoot(document.getElementById("app")!).render(
-  <Router>
+  <Router basename="/full-stack-open-pokedex">
     <App />
   </Router>
 );
