@@ -42,9 +42,6 @@ jobs:
             pages: write
             id-token: write
         steps:
-            - name: "Deploy to Render"
-              if: always() && github.token != ''
-              run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
             - name: Deploy to GitHub Pages
               if: always() && github.token != ''
               id: deployment
