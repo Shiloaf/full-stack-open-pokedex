@@ -4,7 +4,7 @@ const path = require('path');
 module.exports = {
   entry: "./src/index.tsx",
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'dist', 'full-stack-open-pokedex'),
     filename: 'bundle.js',
     publicPath: '/'
   },
@@ -41,6 +41,10 @@ module.exports = {
   },
   devServer: {
     historyApiFallback: true,
+    static: {
+      directory: path.join(__dirname, 'public'),
+    },
+    compress: true,
   },
   plugins: [
     new HtmlWebPackPlugin({

@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 
 test.describe("Pokedex Front Page", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("http://localhost:8080");
+    await page.goto("");
   });
 
   test("front page can be opened", async ({ page }) => {
@@ -13,7 +13,7 @@ test.describe("Pokedex Front Page", () => {
 
 test.describe("Pokedex Pokemon Page", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("http://localhost:8080");
+    await page.goto("");
   });
 
   test("pokemon page can be opened", async ({ page }) => {
