@@ -1,3 +1,10 @@
+export interface PokeApiResponse {
+  count: number;
+  next: string;
+  previous: string;
+  results: PokemonCreature[];
+}
+
 export interface PokemonCreature {
   name: string;
   url: string;
