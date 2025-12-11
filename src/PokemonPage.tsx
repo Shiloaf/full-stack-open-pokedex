@@ -1,10 +1,10 @@
 import React from "react";
 import { Link, useParams } from "react-router-dom";
 import LoadingSpinner from "./LoadingSpinner";
-import { useApi } from "./useApi";
 import PokemonAbility from "./PokemonAbility";
 import ErrorMessage from "./ErrorMessage";
-import { PokemonCreature, PokemonData } from "./types";
+import { PokemonCreature } from "./types";
+import { useGetPokemonByNameQuery } from "./store/apiSlice";
 
 const formatName = (nameWithDash: string) => nameWithDash.replace("-", " ");
 
@@ -16,26 +16,19 @@ const PokemonPage = ({
   next: PokemonCreature | null;
 }) => {
   const { name } = useParams();
-  const {
-    data: pokemon,
-    error,
-    isLoading,
-  } = useApi<PokemonData>(`https://pokeapi.co/api/v2/pokemon/${name}`);
+  const { data: pokemon, isLoading } = useGetPokemonByNameQuery(name!);
 
   if (isLoading) {
     return <LoadingSpinner />;
   }
-  if (error) {
-    return <ErrorMessage error={error} />;
-  }
 
   if (!pokemon) {
-    return <ErrorMessage error="Pokemon name not recognized" />;
+    return <ErrorMessage error={{ message: "Pokemon name not recognized" }} />;
   }
 
   const type = pokemon.types.find((type) => type.slot === 1)?.type;
   if (!type) {
-    return <ErrorMessage error="Pokemon type not recognized" />;
+    return <ErrorMessage error={{ message: "Pokemon type not recognized" }} />;
   }
   const stats = pokemon.stats
     .map((stat) => ({

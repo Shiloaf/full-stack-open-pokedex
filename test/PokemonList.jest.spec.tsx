@@ -1,30 +1,24 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
-import { BrowserRouter } from "react-router-dom";
-import "@testing-library/jest-dom";
+import { screen, waitFor } from "@testing-library/react";
+import fetchMock from "jest-fetch-mock";
 import PokemonList from "../src/PokemonList";
-
-const pokemonList = [
-  {
-    url: "https://pokeapi.co/api/v2/pokemon/1/",
-    name: "bulbasaur",
-    id: 1,
-  },
-  {
-    url: "https://pokeapi.co/api/v2/pokemon/133/",
-    name: "eevee",
-    id: 133,
-  },
-];
+import { renderWithRouter } from "./App.jest.spec";
+import { pokemonList } from "./testData";
+import "@testing-library/jest-dom";
 
 describe("<PokemonList />", () => {
-  it("should render items", () => {
-    render(
-      <BrowserRouter>
-        <PokemonList pokemonList={pokemonList} />
-      </BrowserRouter>
-    );
-    expect(screen.getByText("bulbasaur")).toBeVisible();
-    expect(screen.getByText("eevee")).toBeVisible();
+  it("fetches pokemon list", async () => {
+    fetchMock.mockResponse(JSON.stringify(pokemonList));
+
+    renderWithRouter(<PokemonList pokemonList={pokemonList} />, {
+      path: "/",
+      route: "*",
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText("bulbasaur")).toBeVisible();
+      expect(screen.getByText("eevee")).toBeVisible();
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+    });
   });
 });
