@@ -1,75 +1,77 @@
 name: Deployment pipeline
 run-name: "Deployment pipeline"
 on:
-    push:
-      branches: [ "main" ]
-    pull_request:
-      branches: [ "main" ]
-      types: [ opened, synchronize ]
-    workflow_dispatch:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+    types: [opened, synchronize]
+  workflow_dispatch:
 
 jobs:
-    build_test:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
-            - uses: actions/setup-node@v4
-              with:
-                node-version: '20'
-            - name: "Install dependencies"
-              run: npm install
-            - name: "Check style"
-              run: npm run eslint
-            - name: "Build project"
-              run: npm run build
-            - name: "Upload pages artifact"
-              uses: actions/upload-pages-artifact@v3
-              if: always() && github.token != ''
-              with:
-                path: './dist/full-stack-open-pokedex'
-            - name: "Run tests"
-              run: npm run test
-            - name: "Install Playwright Browsers"
-              run: npx playwright install --with-deps
-            - name: Run Playwright tests
-              run: npx playwright test
-            - name: Upload test results
-              if: always() && github.token != ''
-              uses: actions/upload-artifact@v4
-              with:
-                name: playwright-report
-                path: playwright-report/
-                retention-days: 30
+  build_test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: "Install dependencies"
+        run: npm install
+      - name: "Check style"
+        run: npm run eslint
+      - name: "Build project"
+        run: npm run build
+      - name: "Upload pages artifact"
+        uses: actions/upload-pages-artifact@v3
+        if: always() && github.token != ''
+        with:
+          path: "./dist/full-stack-open-pokedex"
+      - name: "Run tests"
+        run: npm run test
+      - name: "Install Playwright Browsers"
+        run: npx playwright install --with-deps
+      - name: Run Playwright tests
+        run: npx playwright test
+      - name: Upload test results
+        if: always() && github.token != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
 
-    deploy:
-        if: github.event_name == 'push'
-        runs-on: ubuntu-latest
-        needs: build_test
-        environment:
-            name: github-pages
-            url: ${{ steps.deployment.outputs.page_url }}
-        permissions:
-            pages: write
-            id-token: write
-        steps:
-            - name: Deploy to GitHub Pages
-              id: deployment
-              uses: actions/deploy-pages@v4
-    
-    tag_release:
-        if: github.event_name == 'push'
-        runs-on: ubuntu-latest
-        needs: [build_test, deploy]
-        permissions:
-            contents: write
-        steps:
-            - uses: actions/checkout@v4
-              with:
-                fetch-depth: 0
-            - name: Test commit messages
-              run: echo ${{ join(github.event.commits.*.messages, '\n') }}
-            - name: Bump version and push tag
-              if: contains(join(env.GITHUB_COMMIT_MESSAGE, '\n'), '#skip')
-              uses: anothrNick/github-tag-action@1.75.0
-              env:
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  deploy:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    needs: build_test
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      pages: write
+      id-token: write
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  tag_release:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    needs: [build_test, deploy]
+    env:
+      COMMIT_MESSAGE: ${{ github.event.commits[0].message }}
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Test commit messages
+        run: echo ${{ env.COMMIT_MESSAGE }}
+      - name: Bump version and push tag
+        if: contains(env.COMMIT_MESSAGE, '#skip')
+        uses: anothrNick/github-tag-action@1.75.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
