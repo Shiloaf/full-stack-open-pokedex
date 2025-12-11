@@ -1,49 +1,64 @@
-jest.mock("axios");
 import React from "react";
-import { render, screen } from "@testing-library/react";
-import axiosMock from "axios";
-import { act } from "react-dom/test-utils";
-import "@testing-library/jest-dom";
-import { BrowserRouter as Router } from "react-router-dom";
+import { render, screen, waitFor } from "@testing-library/react";
+import { Provider } from "react-redux";
+import { createTestStore } from "./testStore";
+import fetchMock from "jest-fetch-mock";
+import { pokemonList } from "./testData";
+import { MemoryRouter, Routes, Route } from "react-router-dom";
 import App from "../src/App";
+import "@testing-library/jest-dom";
 
-const mockedAxios = axiosMock as jest.Mocked<typeof axiosMock>;
+export const renderWithRouter = (
+  ui: React.ReactElement,
+  { path = "/", route = "/" } = {},
+  store = createTestStore()
+) => {
+  return render(
+    <Provider store={store}>
+      <MemoryRouter initialEntries={[path]}>
+        <Routes>
+          <Route path={route} element={ui} />
+        </Routes>
+      </MemoryRouter>
+    </Provider>
+  );
+};
 
 describe("<App />", () => {
-  it("fetches data", async () => {
-    mockedAxios.get.mockResolvedValueOnce({
-      data: {
-        results: [
-          {
-            url: "https://pokeapi.co/api/v2/pokemon/1/",
-            name: "bulbasaur",
-            id: 1,
-          },
-        ],
-      },
-    });
-    await act(async () => {
-      render(
-        <Router>
-          <App />
-        </Router>
-      );
-    });
-    expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-    expect(mockedAxios.get).toHaveBeenCalledWith(
-      "https://pokeapi.co/api/v2/pokemon/?limit=50"
-    );
+  beforeEach(() => {
+    fetchMock.resetMocks();
   });
 
-  it("shows error", async () => {
-    mockedAxios.get.mockRejectedValueOnce(new Error("error"));
-    await act(async () => {
-      render(
-        <Router>
-          <App />
-        </Router>
-      );
+  it("fetches pokemon list", async () => {
+    fetchMock.mockResponse(
+      JSON.stringify({
+        results: pokemonList,
+      })
+    );
+
+    renderWithRouter(<App />, {
+      path: "/",
+      route: "*",
     });
-    expect(screen.getByTestId("error")).toBeVisible();
+
+    await waitFor(() => {
+      expect(screen.getByText("bulbasaur")).toBeVisible();
+      expect(screen.getByText("eevee")).toBeVisible();
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it("Pokemon List shows error", async () => {
+    fetchMock.mockReject(new Error("error"));
+
+    renderWithRouter(<App />, {
+      path: "/",
+      route: "*",
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId("error")).toBeVisible();
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+    });
   });
 });

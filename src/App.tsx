@@ -21,7 +21,6 @@ const App = () => {
     error,
   } = useGetPokemonsInfiniteQuery();
 
-  console.log(location);
   const pokemonList = data?.pages.flatMap((page) => page.results) ?? [];
 
   if (isFetchingNextPage) {
