@@ -61,7 +61,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build_test, deploy]
     env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       COMMIT_MESSAGE: ${{ github.event.commits[0].message }}
     permissions:
       contents: write
@@ -74,3 +73,6 @@ jobs:
       - name: Bump version and push tag
         if: contains(env.COMMIT_MESSAGE, '#skip') == false
         uses: anothrNick/github-tag-action@1.75.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BUMP: patch
