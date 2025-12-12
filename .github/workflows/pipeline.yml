@@ -76,3 +76,14 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BUMP: patch
+  
+  notify:
+    runs-on: ubuntu-latest
+    needs: [build_test, deploy]
+    steps:
+      - name: Discord notification
+        uses: Ilshidur/action-discord@master
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        with:
+          args: ${{ needs.deploy.result }}
