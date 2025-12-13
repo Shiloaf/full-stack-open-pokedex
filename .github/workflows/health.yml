@@ -1,0 +1,12 @@
+name: Health Check
+run-name: Health Check
+
+on:
+    workflow_dispatch:
+
+jobs:
+    health:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Check deployed service URL
+              run: curl -I https://shiloaf.github.io/full-stack-open-pokedex
