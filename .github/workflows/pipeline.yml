@@ -86,4 +86,16 @@ jobs:
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
-          args: ${{ needs.deploy.result }}
+          args: 'The project {{ EVENT_PAYLOAD.repository.full_name }} has been deployed.'
+
+  notify_failure:
+    runs-on: ubuntu-latest
+    needs: [build_test, deploy]
+    if: ${{ failure() }}
+    steps:
+      - name: Discord notification
+        uses: Ilshidur/action-discord@master
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        with:
+          args: 'The project {{ EVENT_PAYLOAD.repository.full_name }} has failed to deploy.'
