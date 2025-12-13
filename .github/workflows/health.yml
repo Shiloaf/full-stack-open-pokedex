@@ -11,4 +11,4 @@ jobs:
             - name: Check deployed service URL
               uses: jtalk/url-health-check-action@v4
               with:
-                  url: "https://shiloaf.github.io/full-stack-open-pokedex/health"
+                  url: "https://shiloaf.github.io/full-stack-open-pokedex"
