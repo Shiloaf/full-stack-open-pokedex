@@ -16,7 +16,7 @@ app.get('/full-stack-open-pokedex/bundle.js', (req, res) => {
 });
 
 app.get('/full-stack-open-pokedex/health', (req, res) => {
-  res.send('ok');
+  res.sendFile(path.join(__dirname, 'dist', 'full-stack-open-pokedex', 'health.html'));
 })
 
 app.listen(PORT, () => {
