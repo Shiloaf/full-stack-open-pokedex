@@ -1,8 +1,8 @@
 name: Health Check
 run-name: Health Check
-
 on:
-    workflow_dispatch:
+    schedule:
+        - cron: '0/5 * * * *'
 
 jobs:
     health:
