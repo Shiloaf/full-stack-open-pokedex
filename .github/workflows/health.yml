@@ -2,7 +2,7 @@ name: Health Check
 run-name: Health Check
 on:
     schedule:
-        - cron: '0/5 * * * *'
+        - cron: '*/10 * * * *'
     push:
         branches:
             - main
